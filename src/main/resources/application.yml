@@ -1,0 +1,12 @@
+server:
+  port: 8080                         # 应用启动端口
+
+spring:
+  application:
+    name: ai-alibaba-demo
+  ai:
+    dashscope:
+      api-key: sk-3bdd93dbe51e40819d2cecbdc0b6e1d4 # 从环境变量读取您已拥有的百炼 API‑Key
+#      chat:
+#        options:
+#          model: qwen-plus            # 可选：qwen-turbo / qwen-plus / qwen-max 等

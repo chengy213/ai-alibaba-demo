@@ -1,0 +1,54 @@
+version1
+以下是一个完整、可运行的 Spring AI Alibaba 本地项目，基于天气查询场景，集成了 Agent 对话与工具调用能力，并提供一个简洁的前端聊天页面。项目按要求集成了最新稳定版本。
+
+[项目整体说明]
+- 项目名称：ai-alibaba-demo
+- JDK 版本：17
+- 核心依赖：
+    - spring-ai-alibaba-agent-framework 1.1.2.0
+    - spring-ai-alibaba-starter-dashscope 1.1.2.0
+
+应用场景：天气与生活助手 —— 一个可以查询天气、添加备忘录和计算数学表达式的对话式助手。
+用户在前端输入自然语言，后台 AI Agent 会智能识别用户意图，并自动调用相应的远程或本地工具，最终将答案返回给用户。
+例如，查询 “北京明天天气” 会调用 get_weather 工具，新备忘录 “下午3点开会” 会存入内存列表，“计算 123*456” 则会调用计算工具。
+
+项目最终目录结构如下：
+ai-alibaba-demo/
+├── pom.xml
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── example/
+│   │   │           └── ai/
+│   │   │               ├── AiAlibabaDemoApplication.java
+│   │   │               ├── tool/
+│   │   │               │   ├── MemoTool.java
+│   │   │               │   ├── WeatherTool.java
+│   │   │               │   └── CalculatorTool.java
+│   │   │               ├── controller/
+│   │   │               │   └── ChatController.java
+│   │   │               └── config/
+│   │   │                   └── AgentConfig.java
+│   │   └── resources/
+│   │       ├── application.yml
+│   │       └── static/
+│   │           └── index.html
+
+[运行与测试]
+1. 环境变量：确保已设置你在阿里云百炼平台上生成的 API‑Key。
+2. 启动应用
+3. 打开浏览器：访问 http://localhost:8080（静态资源 index.html 会自动提供）。
+4. 体验对话：
+    - 尝试输入：“北京今天天气怎么样？”
+    - 输入：“帮我记住下午3点开会”
+    - 输入：“计算 123 * 456”
+    - 输入：“现在有什么备忘录？”
+Agent 会智能识别您的意图，调用正确的工具并返回结果。
+
+关键组件关系回顾：
+- ChatModel → 负责与大模型通信
+- ToolCallback → 包装具体方法为模型可调用的工具
+- ReactAgent → 多步推理核心，调度模型 + 工具协同工作
+- MemorySaver → 持久化对话历史，支持多轮上下文记忆
+
