@@ -22,18 +22,20 @@ ai-alibaba-demo/
 │   │   │       └── example/
 │   │   │           └── ai/
 │   │   │               ├── AiAlibabaDemoApplication.java
-│   │   │               ├── tool/
-│   │   │               │   ├── MemoTool.java
-│   │   │               │   ├── WeatherTool.java
-│   │   │               │   └── CalculatorTool.java
+│   │   │               ├── config/
+│   │   │               │   └── AgentConfig.java
 │   │   │               ├── controller/
 │   │   │               │   └── ChatController.java
-│   │   │               └── config/
-│   │   │                   └── AgentConfig.java
+│   │   │               └── tool/
+│   │   │                   ├── CalculatorTool.java
+│   │   │                   ├── MemoTool.java
+│   │   │                   └── WeatherTool.java
 │   │   └── resources/
 │   │       ├── application.yml
 │   │       └── static/
 │   │           └── index.html
+│   └── test/   (可选，当前项目未实现)
+└── README.md   (建议添加)
 
 [运行与测试]
 1. 环境变量：确保已设置你在阿里云百炼平台上生成的 API‑Key。

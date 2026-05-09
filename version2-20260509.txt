@@ -1,0 +1,49 @@
+📋 Version 2 最终版 版本改动日志
+
+ai-alibaba-demo/
+├── pom.xml                                    [修改] 新增 redisson-spring-boot-starter、commons-pool2 依赖
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/example/ai/
+│       │       ├── AiAlibabaDemoApplication.java  [未变]
+│       │       ├── config/
+│       │       │   ├── AgentConfig.java           [修改] 移除手动 DashScopeApi/ChatModel，引入 RedisSaver，系统提示词注入真实日期
+│       │       │   └── RedisConfig.java           [新增] RedisTemplate 序列化配置，String/Json 序列化器
+│       │       ├── controller/
+│       │       │   └── ChatController.java        [修改] 增加 /api/history 接口获取最近20条历史；流式接口增加消息持久化（Redis List）；使用 Map 接收参数代替自定义模型类；增加调试日志
+│       │       ├── model/                          [删除] 整个包被移除
+│       │       │   ├── ChatRequest.java            [删除] 不再需要，改用 Map
+│       │       │   └── ChatResponse.java           [删除] 不再需要，改用 Map
+│       │       └── tool/
+│       │           ├── CalculatorTool.java         [未变]
+│       │           ├── MemoTool.java               [未变]
+│       │           ├── UserLocationTool.java       [新增] 从用户输入提取城市和日期，日期缺省时使用服务器当前日期
+│       │           └── WeatherTool.java            [修改] 由模拟数据改为调用 Open-Meteo 真实天气 API，支持按日期查询未来7天天气
+│       └── resources/
+│           ├── application.yml                    [修改] 增加 Redisson 连接配置（单机模式）、app 自定义参数（max-iterations、conversation 窗口大小等），移除手动的 max-token 设置
+│           └── static/
+│               └── index.html                     [修改] 增加页面加载时自动请求 /api/history 获取历史消息并渲染的功能
+
+🚀 新增功能-主要功能改动
+
+1.持久化对话历史
+- 后端使用 Redis List 存储每个用户的最近 20 条 对话记录。
+- 新增 GET /api/history?userId=xxx 接口，前端页面加载时自动获取并渲染历史消息。
+- 消息在每次对话结束后自动保存，无需手动干预。
+
+2.真实天气查询
+- WeatherTool 接入 Open-Meteo 免费天气 API，支持全球城市经纬度解析和 未来 7 天逐日预报。
+- 与 UserLocationTool 配合，可根据用户意图查询指定城市、指定日期的天气。
+备注：UserLocationTool因为缺乏用户位置上下文，本机访问没有办法根据IP定位地理位置，所以单机基本用不了了。
+
+3.用户意图解析工具 UserLocationTool
+- 由大模型从用户输入中提取城市和日期，工具仅负责传递参数（日期缺省时使用服务器当前日期）。
+- 系统提示词中注入当天真实日期，引导模型正确计算相对日期（如“后天”、“下周一”）。
+
+4.Agent 推理限制
+- 引入 ModelCallLimitHook，单次对话最多 5 轮 推理/行动循环，防止 Token 浪费和死循环。
+- 模型输出序列化限制（通过自动配置的 max-tokens 参数，已配置为 1000）。
+
+5.Redis 状态持久化
+- 采用 RedisSaver（基于 Redisson）替代默认内存存储器，实现 Agent 会话状态的跨请求持久化。

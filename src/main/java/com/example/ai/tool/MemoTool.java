@@ -6,35 +6,42 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * 一个简易的在内存中维护的备忘录工具。
- * 支持添加和查询操作，工具方法根据第一个参数决定执行哪种操作。
+ * 备忘录工具，用于管理用户的简短备忘信息。
+ * 数据仅保存在内存中，重启后丢失。
  */
 @Component
 public class MemoTool {
 
+    // 使用一个简单的 List 存储备忘
     private final List<String> memos = new ArrayList<>();
 
-    @Tool(description = "管理个人备忘录。" +
-            "若用户希望记住某件事请发送 'add: 事情描述'；" +
-            "若用户希望查看已有备忘录请发送 'list'。")
-    public String memo(@ToolParam(description = "操作命令，add: 开头为添加，list 为查询") String command) {
+    @Tool(description = "管理用户的备忘录。添加格式：'add: 内容'；列出所有备忘：'list'")
+    public String memo(
+            @ToolParam(description = "操作指令，例如 'add: 下午3点开会' 或 'list'") String command) {
         if (command == null || command.isBlank()) {
-            return "请提供有效操作（add: 或 list）。";
+            return "格式错误，请使用 'add: 内容' 或 'list'";
         }
         String cmd = command.trim();
         if (cmd.startsWith("add:")) {
             String content = cmd.substring(4).trim();
-            if (content.isEmpty()) return "备忘录内容不能为空。";
+            if (content.isEmpty()) {
+                return "备忘内容不能为空";
+            }
             memos.add(content);
-            return "✅ 已添加备忘录：「" + content + "」。";
-        } else {
-            if (memos.isEmpty()) return "📋 还没有任何备忘录记录。";
-            return "📋 您的备忘录：\n" + memos.stream()
-                    .map(m -> "- " + m)
-                    .collect(Collectors.joining("\n"));
+            return "已添加备忘：「" + content + "」";
         }
+        if ("list".equalsIgnoreCase(cmd)) {
+            if (memos.isEmpty()) {
+                return "暂无备忘";
+            }
+            StringBuilder sb = new StringBuilder("您的备忘：\n");
+            for (int i = 0; i < memos.size(); i++) {
+                sb.append(i + 1).append(". ").append(memos.get(i)).append("\n");
+            }
+            return sb.toString();
+        }
+        return "未知操作，请使用 'add: 内容' 添加备忘，或 'list' 查看。";
     }
 }
