@@ -35,11 +35,12 @@ ai-alibaba-demo/
 2.真实天气查询
 - WeatherTool 接入 Open-Meteo 免费天气 API，支持全球城市经纬度解析和 未来 7 天逐日预报。
 - 与 UserLocationTool 配合，可根据用户意图查询指定城市、指定日期的天气。
-备注：UserLocationTool因为缺乏用户位置上下文，本机访问没有办法根据IP定位地理位置，所以单机基本用不了了。
 
 3.用户意图解析工具 UserLocationTool
 - 由大模型从用户输入中提取城市和日期，工具仅负责传递参数（日期缺省时使用服务器当前日期）。
 - 系统提示词中注入当天真实日期，引导模型正确计算相对日期（如“后天”、“下周一”）。
+备注：UserLocationTool因为缺乏用户位置上下文，本机访问没有办法根据IP定位地理位置，所以单机基本用不了了。
+且该tool依赖大模型给到City和date，工具本身也只是加工成一个String字符串，已经丧失了本身的作用。
 
 4.Agent 推理限制
 - 引入 ModelCallLimitHook，单次对话最多 5 轮 推理/行动循环，防止 Token 浪费和死循环。
