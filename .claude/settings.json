@@ -1,0 +1,46 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git switch:*)",
+      "Bash(java -version)",
+      "Read(./**)"
+    ],
+    "ask": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)",
+      "Bash(git rebase:*)",
+      "Bash(mvn deploy:*)",
+      "Bash(mvn install:*)"
+    ],
+    "deny": [
+      "Read(./**/application.yml)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash(git commit:*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mvn -q compile"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "branch=$(git branch --show-current 2>/dev/null); dirty=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' '); printf '⎇ %s%s' \"$branch\" \"$([ \"$dirty\" != 0 ] && echo ' *')\""
+  },
+  "includeCoAuthoredBy": true
+}

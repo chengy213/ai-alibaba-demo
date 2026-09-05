@@ -67,3 +67,6 @@ build/
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Claude Code 个人本地配置（含密钥/本地路径，勿提交）
+.claude/settings.local.json
