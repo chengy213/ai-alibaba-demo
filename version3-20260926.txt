@@ -1,0 +1,61 @@
+📋 Version 3 最终版 版本改动日志
+
+相对 Version 2（version2-20260509.txt）：本版本不改动业务运行时（Java / pom / application.yml / 前端），聚焦「人读项目指引 + Claude Code 工程化配置」，方便后续用 AI 助手安全、可复现地改本仓库。
+
+ai-alibaba-demo/
+├── CLAUDE.md                                  [新增] 仓库级项目指引：技术栈、常用命令、Agent 装配/请求流/工具说明、已知坑与参考文档索引
+├── .gitignore                                 [修改] 忽略 .claude/settings.local.json（个人本地覆盖，勿提交）
+├── .claude/
+│   ├── settings.json                          [新增] 团队共享 Claude Code 配置：权限 allow/ask/deny、git commit 前 mvn compile hook、状态栏显示当前分支
+│   ├── settings.local.json                    [未跟踪] 个人本地覆盖占位（已 gitignore）
+│   ├── agents/
+│   │   └── saa-reviewer.md                    [新增] Spring AI Alibaba 审查 subagent：聚焦 @Tool / Agent 装配 / SSE 与历史 / API Key 安全
+│   ├── commands/
+│   │   ├── run-app.md                         [新增] /run-app：先检查本地 Redis(6379) 再 mvn spring-boot:run
+│   │   └── release-notes.md                   [新增] /release-notes：按 versionN 风格从 git 生成中文发版日志
+│   └── skills/
+│       └── spring-ai-alibaba/
+│           ├── SKILL.md                       [新增] skill 入口：按任务类型渐进披露，先读 CLAUDE.md「已知坑」
+│           └── references/
+│               ├── tool-pattern.md            [新增] @Tool 工具写法与本仓库约定
+│               ├── agent-wiring.md            [新增] ReactAgent 装配、Hook、系统提示词
+│               └── streaming-and-history.md   [新增] SSE 流式输出与两套历史存储（Redis List vs RedisSaver）
+├── pom.xml                                    [未变]
+├── src/                                       [未变] 业务代码相对 version2 无改动
+│   └── main/
+│       ├── java/.../config|controller|tool/   [未变]
+│       └── resources/
+│           ├── application.yml                [未变]
+│           └── static/index.html              [未变]
+├── version1-20260429.txt                      [未变]
+├── version2-20260509.txt                      [未变]
+└── readme-2rounds.txt                         [未变]
+
+🚀 新增功能 / 主要改动
+
+1.仓库级项目指引 CLAUDE.md
+- 浓缩 Version 1/2 与源码现状：技术栈、启动前提（Redis）、Agent 装配点、请求流、四个 Tool 行为、已知坑（如 CalculatorTool/Nashorn、流式 Round 0 空文本过滤等）。
+- 给 Claude Code / 其他 AI 助手作为改代码前的「基底文档」，避免重复踩坑。
+
+2.Claude Code 团队共享配置（.claude/settings.json）
+- 权限：mvn / 常规 git 只读命令放行；git add/commit/push 等需询问；禁止直接读取 application.yml（保护 API Key）。
+- Hook：执行 git commit 前自动 `mvn -q compile`，降低提交无法编译的代码的概率。
+- 状态栏：展示当前 git 分支及是否有未提交改动。
+
+3.斜杠命令
+- `/run-app`：确认 Redis 可达后再启动 Spring Boot，失败时提示先起 Redis，不改连接配置。
+- `/release-notes`：对照已有 version*.txt 风格，用 git log/diff 生成下一版中文发版说明。
+
+4.SAA 审查 subagent（saa-reviewer）
+- 专门审查 ReactAgent / @Tool / ChatController / AgentConfig 相关改动。
+- 内置审查清单与已知坑（两套历史存储勿混淆、流式 Round 0 空文本属预期等），按 Critical/Major/Minor 输出。
+
+5.spring-ai-alibaba Skill（渐进披露）
+- SKILL.md 按「用户要做什么」指向三份 references，避免一次灌入全部上下文。
+- 覆盖工具模式、Agent 装配、流式与对话历史三类高频改动场景。
+
+📝 备注
+
+- 本版本相对 version2：**无运行时行为变化**；查天气、备忘录、计算器、Redis 历史与 RedisSaver 会话记忆等能力与 version2 一致。
+- version2 中已标注的已知问题（UserLocationTool 基本残废、CalculatorTool 在 JDK 17 下大概率不可用、API Key 明文等）仍存在，详见 CLAUDE.md「已知坑」。
+- `.claude/settings.local.json` 仅本机使用，已加入 .gitignore，请勿提交。
